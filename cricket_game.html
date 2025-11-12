@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Game - Play Online</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '🏏';
+            position: absolute;
+            font-size: 200px;
+            opacity: 0.1;
+            top: -50px;
+            right: -50px;
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .menu-btn {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .menu-btn i {
+            margin-right: 10px;
+        }
+
+        .input-group {
+            margin: 20px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            transition: border 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            margin: 5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .game-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .scoreboard {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .scoreboard h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .number-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .number-btn {
+            padding: 20px;
+            font-size: 1.5rem;
+            border: 3px solid #667eea;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .number-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .toss-options {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .toss-btn {
+            padding: 40px;
+            font-size: 1.2rem;
+            border: 3px solid #667eea;
+            background: white;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        .toss-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .toss-btn.selected {
+            background: #667eea;
+            color: white;
+        }
+
+        .message {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .message.danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            line-height: 1.8;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+            padding-left: 10px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            animation: bounceIn 0.6s;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .result-card h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .innings-info {
+            background: white;
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .number-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .toss-options {
+                flex-direction: column;
+            }
+
+            .toss-btn {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏏 Cricket Game</h1>
+            <p>Experience the thrill of cricket!</p>
+        </div>
+
+        <div class="content">
+            <!-- Main Menu Screen -->
+            <div id="menuScreen" class="screen active">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Main Menu</h2>
+                <button class="menu-btn" onclick="showScreen('loginScreen')">
+                    <i class="fas fa-play-circle"></i> Play Game
+                </button>
+                <button class="menu-btn" onclick="showScreen('instructionsScreen')">
+                    <i class="fas fa-book"></i> Instructions
+                </button>
+                <button class="menu-btn" onclick="showScreen('dataScreen')">
+                    <i class="fas fa-chart-bar"></i> View Statistics
+                </button>
+            </div>
+
+            <!-- Login Screen -->
+            <div id="loginScreen" class="screen">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Login to Play</h2>
+                <div class="input-group">
+                    <label>Password:</label>
+                    <input type="password" id="password" placeholder="Enter password (hint: ng)">
+                </div>
+                <div class="input-group">
+                    <label>Your Name:</label>
+                    <input type="text" id="playerName" placeholder="Enter your name">
+                </div>
+                <button class="btn btn-primary" onclick="startGame()">
+                    <i class="fas fa-sign-in-alt"></i> Start Game
+                </button>
+                <button class="btn btn-secondary" onclick="showScreen('menuScreen')">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+
+            <!-- Toss Screen -->
+            <div id="tossScreen" class="screen">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #333;">Toss Time!</h2>
+                <p style="text-align: center; font-size: 1.1rem; margin-bottom: 30px;">Choose heads or tails:</p>
+                <div class="toss-options">
+                    <button class="toss-btn" onclick="selectToss('heads')">
+                        <i class="fas fa-coins" style="font-size: 3rem; display: block; margin-bottom: 10px;"></i>
+                        HEADS
+                    </button>
+                    <button class="toss-btn" onclick="selectToss('tails')">
+                        <i class="fas fa-coins" style="font-size: 3rem; display: block; margin-bottom: 10px;"></i>
+                        TAILS
+                    </button>
+                </div>
+                <div id="tossResult"></div>
+            </div>
+
+            <!-- Bat/Ball Choice Screen -->
+            <div id="batBallScreen" class="screen">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #333;">You Won the Toss!</h2>
+                <p style="text-align: center; font-size: 1.1rem; margin-bottom: 30px;">Choose to bat or ball:</p>
+                <div class="toss-options">
+                    <button class="toss-btn" onclick="selectBatBall('bat')">
+                        <i class="fas fa-baseball-ball" style="font-size: 3rem; display: block; margin-bottom: 10px;"></i>
+                        BAT
+                    </button>
+                    <button class="toss-btn" onclick="selectBatBall('ball')">
+                        <i class="fas fa-bowling-ball" style="font-size: 3rem; display: block; margin-bottom: 10px;"></i>
+                        BALL
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Play Screen -->
+            <div id="gameScreen" class="screen">
+                <div class="scoreboard">
+                    <h3 id="inningsTitle">First Innings</h3>
+                    <div class="score-display" id="currentScore">0/0</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="ballsProgress" style="width: 0%;">0/12 balls</div>
+                    </div>
+                    <div id="targetInfo" style="margin-top: 15px; font-size: 1.1rem;"></div>
+                </div>
+
+                <div class="game-container">
+                    <p style="text-align: center; font-size: 1.2rem; margin-bottom: 20px; font-weight: bold;">
+                        Choose a number (1-6):
+                    </p>
+                    <div class="number-selector">
+                        <button class="number-btn" onclick="playBall(1)">1</button>
+                        <button class="number-btn" onclick="playBall(2)">2</button>
+                        <button class="number-btn" onclick="playBall(3)">3</button>
+                        <button class="number-btn" onclick="playBall(4)">4</button>
+                        <button class="number-btn" onclick="playBall(5)">5</button>
+                        <button class="number-btn" onclick="playBall(6)">6</button>
+                    </div>
+                </div>
+
+                <div id="ballResult"></div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h4>Batting</h4>
+                        <div class="value" id="battingTeam">-</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Bowling</h4>
+                        <div class="value" id="bowlingTeam">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="resultScreen" class="screen">
+                <div class="result-card" id="resultCard">
+                    <h2 id="resultTitle">Match Result</h2>
+                    <p id="resultMessage" style="font-size: 1.3rem; margin: 20px 0;"></p>
+                    
+                    <div class="innings-info">
+                        <h3 style="color: #667eea; margin-bottom: 15px;">Match Summary</h3>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left;">
+                            <div>
+                                <strong>First Innings:</strong><br>
+                                Runs: <span id="firstInningsRuns"></span><br>
+                                Wickets: <span id="firstInningsWickets"></span>
+                            </div>
+                            <div>
+                                <strong>Second Innings:</strong><br>
+                                Runs: <span id="secondInningsRuns"></span><br>
+                                Wickets: <span id="secondInningsWickets"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="resetGame()">
+                    <i class="fas fa-redo"></i> Play Again
+                </button>
+                <button class="btn btn-secondary" onclick="showScreen('menuScreen')">
+                    <i class="fas fa-home"></i> Main Menu
+                </button>
+            </div>
+
+            <!-- Instructions Screen -->
+            <div id="instructionsScreen" class="screen">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #333;">How to Play</h2>
+                <div class="instructions">
+                    <ol>
+                        <li>🎲 You have to select any random number from 1 to 6.</li>
+                        <li>💻 The computer will also select a number.</li>
+                        <li>🏏 While batting, if the number selected by you and computer is different, then your number will add to your runs. If the numbers are same, you will lose your wicket.</li>
+                        <li>🎳 While bowling, if the number selected by you and computer is different, the computer's number will add to its runs.</li>
+                        <li>⚡ Each player will get 2 wickets and 2 overs (12 balls) for batting and bowling.</li>
+                        <li>🏁 The innings will end after two wickets fell or the overs end.</li>
+                        <li>🏆 The player with maximum runs wins!</li>
+                    </ol>
+                </div>
+                <button class="back-btn" onclick="showScreen('menuScreen')">
+                    <i class="fas fa-arrow-left"></i> Back to Menu
+                </button>
+            </div>
+
+            <!-- Data/Statistics Screen -->
+            <div id="dataScreen" class="screen">
+                <h2 style="text-align: center; margin-bottom: 20px; color: #333;">Match Statistics</h2>
+                <div class="instructions">
+                    <p style="text-align: center; font-size: 1.1rem; color: #666;">
+                        <i class="fas fa-info-circle"></i> Statistics are stored in the database.<br>
+                        Run the Python script to save and view match history.
+                    </p>
+                    <div style="margin-top: 30px; text-align: center;">
+                        <i class="fas fa-database" style="font-size: 4rem; color: #667eea; opacity: 0.5;"></i>
+                        <p style="margin-top: 20px; color: #999;">
+                            Connect to database to view statistics
+                        </p>
+                    </div>
+                </div>
+                <button class="back-btn" onclick="showScreen('menuScreen')">
+                    <i class="fas fa-arrow-left"></i> Back to Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let gameState = {
+            playerName: '',
+            userChoice: '',
+            compChoice: '',
+            batting: '',
+            bowling: '',
+            innings: 1,
+            runs1: 0,
+            wickets1: 0,
+            balls1: 0,
+            runs2: 0,
+            wickets2: 0,
+            balls2: 0,
+            batFirst: '',
+            ballFirst: ''
+        };
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function startGame() {
+            const password = document.getElementById('password').value;
+            const playerName = document.getElementById('playerName').value;
+
+            if (password !== 'ng') {
+                alert('Incorrect password! Hint: ng');
+                return;
+            }
+
+            if (!playerName) {
+                alert('Please enter your name!');
+                return;
+            }
+
+            gameState.playerName = playerName;
+            showScreen('tossScreen');
+        }
+
+        function selectToss(choice) {
+            const randomToss = Math.random() < 0.5 ? 'heads' : 'tails';
+            const resultDiv = document.getElementById('tossResult');
+
+            if (choice === randomToss) {
+                resultDiv.innerHTML = `<div class="message success">
+                    <i class="fas fa-check-circle"></i> You won the toss! It's ${randomToss}!
+                </div>`;
+                setTimeout(() => showScreen('batBallScreen'), 2000);
+            } else {
+                const compChoice = Math.random() < 0.5 ? 'bat' : 'ball';
+                gameState.batting = compChoice === 'bat' ? 'Computer' : 'You';
+                gameState.bowling = compChoice === 'bat' ? 'You' : 'Computer';
+                gameState.batFirst = gameState.batting;
+                gameState.ballFirst = gameState.bowling;
+                
+                resultDiv.innerHTML = `<div class="message danger">
+                    <i class="fas fa-times-circle"></i> You lost the toss! It's ${randomToss}!<br>
+                    Computer chose to ${compChoice}.
+                </div>`;
+                setTimeout(() => startInnings(), 2500);
+            }
+        }
+
+        function selectBatBall(choice) {
+            gameState.batting = choice === 'bat' ? 'You' : 'Computer';
+            gameState.bowling = choice === 'bat' ? 'Computer' : 'You';
+            gameState.batFirst = gameState.batting;
+            gameState.ballFirst = gameState.bowling;
+            startInnings();
+        }
+
+        function startInnings() {
+            document.getElementById('battingTeam').textContent = gameState.innings === 1 ? gameState.batFirst : (gameState.batFirst === 'You' ? 'Computer' : 'You');
+            document.getElementById('bowlingTeam').textContent = gameState.innings === 1 ? gameState.ballFirst : (gameState.ballFirst === 'You' ? 'Computer' : 'You');
+            
+            updateScoreboard();
+            showScreen('gameScreen');
+        }
+
+        function playBall(userNum) {
+            const compNum = Math.floor(Math.random() * 6) + 1;
+            const resultDiv = document.getElementById('ballResult');
+
+            if (gameState.innings === 1) {
+                gameState.balls1++;
+                
+                if (userNum === compNum) {
+                    gameState.wickets1++;
+                    resultDiv.innerHTML = `<div class="message danger">
+                        <i class="fas fa-times"></i> OUT! You: ${userNum}, Computer: ${compNum}<br>
+                        Wicket fallen!
+                    </div>`;
+                } else {
+                    const runs = gameState.batting === 'You' ? userNum : compNum;
+                    gameState.runs1 += runs;
+                    resultDiv.innerHTML = `<div class="message success">
+                        <i class="fas fa-check"></i> You: ${userNum}, Computer: ${compNum}<br>
+                        ${runs} runs scored!
+                    </div>`;
+                }
+
+                updateScoreboard();
+
+                if (gameState.wickets1 >= 2 || gameState.balls1 >= 12) {
+                    setTimeout(() => endFirstInnings(), 1500);
+                }
+            } else {
+                gameState.balls2++;
+                
+                if (userNum === compNum) {
+                    gameState.wickets2++;
+                    resultDiv.innerHTML = `<div class="message danger">
+                        <i class="fas fa-times"></i> OUT! You: ${userNum}, Computer: ${compNum}<br>
+                        Wicket fallen!
+                    </div>`;
+                } else {
+                    const runs = gameState.batFirst === 'Computer' ? userNum : compNum;
+                    gameState.runs2 += runs;
+                    resultDiv.innerHTML = `<div class="message success">
+                        <i class="fas fa-check"></i> You: ${userNum}, Computer: ${compNum}<br>
+                        ${runs} runs scored!
+                    </div>`;
+                }
+
+                updateScoreboard();
+
+                if (gameState.wickets2 >= 2 || gameState.balls2 >= 12 || gameState.runs2 > gameState.runs1) {
+                    setTimeout(() => showResult(), 1500);
+                }
+            }
+        }
+
+        function updateScoreboard() {
+            const runs = gameState.innings === 1 ? gameState.runs1 : gameState.runs2;
+            const wickets = gameState.innings === 1 ? gameState.wickets1 : gameState.wickets2;
+            const balls = gameState.innings === 1 ? gameState.balls1 : gameState.balls2;
+
+            document.getElementById('currentScore').textContent = `${runs}/${wickets}`;
+            document.getElementById('ballsProgress').style.width = `${(balls/12)*100}%`;
+            document.getElementById('ballsProgress').textContent = `${balls}/12 balls`;
+
+            if (gameState.innings === 2) {
+                const needed = gameState.runs1 - gameState.runs2 + 1;
+                const ballsLeft = 12 - balls;
+                document.getElementById('targetInfo').innerHTML = `Target: ${gameState.runs1 + 1}<br>Need ${needed} runs from ${ballsLeft} balls`;
+            }
+        }
+
+        function endFirstInnings() {
+            document.getElementById('ballResult').innerHTML = `<div class="message info">
+                <i class="fas fa-info-circle"></i> First Innings Complete!<br>
+                ${gameState.ballFirst} needs ${gameState.runs1 + 1} runs to win.<br>
+                Starting Second Innings...
+            </div>`;
+
+            gameState.innings = 2;
+            document.getElementById('inningsTitle').textContent = 'Second Innings';
+            
+            setTimeout(() => {
+                document.getElementById('ballResult').innerHTML = '';
+                updateScoreboard();
+            }, 3000);
+        }
+
+        function showResult() {
+            const resultCard = document.getElementById('resultCard');
+            let resultTitle, resultMessage, status;
+
+            if (gameState.runs1 > gameState.runs2) {
+                if (gameState.batFirst === 'You') {
+                    resultTitle = '🎉 Congratulations! 🎉';
+                    resultMessage = `You won by ${gameState.runs1 - gameState.runs2} runs!`;
+                    status = 'Win';
+                    resultCard.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+                } else {
+                    resultTitle = '😔 Better Luck Next Time!';
+                    resultMessage = `Computer won by ${gameState.runs1 - gameState.runs2} runs!`;
+                    status = 'Loss';
+                    resultCard.style.background = 'linear-gradient(135deg, #ee0979 0%, #ff6a00 100%)';
+                }
+            } else if (gameState.runs2 > gameState.runs1) {
+                if (gameState.batFirst === 'Computer') {
+                    resultTitle = '🎉 Congratulations! 🎉';
+                    resultMessage = `You won by ${2 - gameState.wickets2} wickets!`;
+                    status = 'Win';
+                    resultCard.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+                } else {
+                    resultTitle = '😔 Better Luck Next Time!';
+                    resultMessage = `Computer won by ${2 - gameState.wickets2} wickets!`;
+                    status = 'Loss';
+                    resultCard.style.background = 'linear-gradient(135deg, #ee0979 0%, #ff6a00 100%)';
+                }
+            } else {
+                resultTitle = '🤝 It\'s a Tie!';
+                resultMessage = 'No one wins!';
+                status = 'Tie';
+                resultCard.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+            }
+
+            document.getElementById('resultTitle').textContent = resultTitle;
+            document.getElementById('resultMessage').textContent = resultMessage;
+            document.getElementById('firstInningsRuns').textContent = gameState.runs1;
+            document.getElementById('firstInningsWickets').textContent = gameState.wickets1;
+            document.getElementById('secondInningsRuns').textContent = gameState.runs2;
+            document.getElementById('secondInningsWickets').textContent = gameState.wickets2;
+
+            // Save to localStorage (simulating database)
+            saveMatchData(status);
+
+            showScreen('resultScreen');
+        }
+
+        function saveMatchData(status) {
+            const matchData = {
+                date: new Date().toLocaleDateString(),
+                name: gameState.playerName,
+                runs: status === 'Win' ? Math.max(gameState.runs1, gameState.runs2) : Math.min(gameState.runs1, gameState.runs2),
+                status: status
+            };
+
+            let matches = JSON.parse(localStorage.getItem('cricketMatches') || '[]');
+            matches.push(matchData);
+            localStorage.setItem('cricketMatches', JSON.stringify(matches));
+        }
+
+        function resetGame() {
+            gameState = {
+                playerName: gameState.playerName,
+                userChoice: '',
+                compChoice: '',
+                batting: '',
+                bowling: '',
+                innings: 1,
+                runs1: 0,
+                wickets1: 0,
+                balls1: 0,
+                runs2: 0,
+                wickets2: 0,
+                balls2: 0,
+                batFirst: '',
+                ballFirst: ''
+            };
+            document.getElementById('ballResult').innerHTML = '';
+            document.getElementById('targetInfo').innerHTML = '';
+            document.getElementById('inningsTitle').textContent = 'First Innings';
+            showScreen('tossScreen');
+        }
+    </script>
+</body>
+</html>
